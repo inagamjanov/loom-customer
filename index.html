@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Loom — Customer Development Survey</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -839,29 +838,25 @@
   const submitBtn = document.getElementById('submitBtn');
   const validationHint = document.getElementById('validationHint');
 
-  // Required fields: all q1-q37 main questions
+  // Required fields
   const requiredFields = {
-    // Text inputs
     text: ['q1','q3','q4','q5','q7','q11','q15','q20','q21','q29','q30','q35','q36','q37'],
-    // Radio (single select)
     radio: ['q2','q6','q10','q12','q17','q19','q22','q23','q25','q26','q27','q31','q33','q34'],
-    // Checkbox (at least one checked)
     checkbox: ['q8','q9','q13','q14','q16','q18','q24','q28','q32']
   };
-
   const totalRequired = requiredFields.text.length + requiredFields.radio.length + requiredFields.checkbox.length;
 
   function getFilledCount() {
     let filled = 0;
     requiredFields.text.forEach(name => {
-      const el = form.querySelector(`[name="${name}"]`);
+      const el = form.querySelector('[name="' + name + '"]');
       if (el && el.value.trim()) filled++;
     });
     requiredFields.radio.forEach(name => {
-      if (form.querySelector(`input[name="${name}"]:checked`)) filled++;
+      if (form.querySelector('input[name="' + name + '"]:checked')) filled++;
     });
     requiredFields.checkbox.forEach(name => {
-      if (form.querySelector(`input[name="${name}"]:checked`)) filled++;
+      if (form.querySelector('input[name="' + name + '"]:checked')) filled++;
     });
     return filled;
   }
@@ -870,7 +865,6 @@
     const filled = getFilledCount();
     const pct = Math.min((filled / totalRequired) * 100, 100);
     progressBar.style.width = pct + '%';
-
     if (filled >= totalRequired) {
       submitBtn.disabled = false;
       validationHint.style.opacity = '0';
@@ -880,280 +874,145 @@
     }
   }
 
-  inputs.forEach(input => {
+  inputs.forEach(function(input) {
     input.addEventListener('input', updateProgress);
     input.addEventListener('change', updateProgress);
   });
 
-  // Question labels for PDF
-  const questionLabels = {
-    q1: "Ismingiz va yoshingiz / Имя и возраст",
-    q2: "Jinsingiz / Пол",
-    q3: "Qayerda yashaysiz / Где живёте",
-    q4: "Kasb / Профессия",
-    q5: "Oylik daromad / Ежемесячный доход",
-    q6: "Xarid qilish chastotasi / Частота покупок",
-    q7: "O'rtacha xarid summasi / Средний чек",
-    q8: "Kim uchun xarid / Для кого покупаете",
-    q9: "Muhim kategoriyalar / Важные категории",
-    q10: "Narx segmenti / Ценовой сегмент",
-    q11: "Brend muhimligi / Важность бренда",
-    q12: "Onlayn xarid qilasizmi / Покупаете онлайн",
-    q13: "Qaysi platformalar / Какие платформы",
-    q14: "Onlayn muammolar / Проблемы онлайн",
-    q15: "Kutilmagan tajriba / Несоответствие ожиданиям",
-    q16: "Ishonch shakli / Формирование доверия",
-    q17: "Qaytarish muhimligi / Важность возврата",
-    q18: "To'lov usuli / Способ оплаты",
-    q19: "Yetkazish kutish / Ожидание доставки",
-    q20: "Yetkazish narxi / Стоимость доставки",
-    q21: "Bepul yetkazish minimali / Мин. для бесплатной доставки",
-    q22: "Marketplace bilimi / Знание маркетплейсов",
-    q23: "Bitta ilova qulayligi / Удобство одного приложения",
-    q24: "Muhim funksiyalar / Важные функции",
-    q25: "Original kafolati uchun to'lash / Доплата за оригинал",
-    q26: "Aksiya muhimligi / Важность скидок",
-    q27: "AI stilist qiziqishi / Интерес к AI-стилисту",
-    q28: "Hozirgi xarid joyi / Где покупаете сейчас",
-    q29: "Nima uchun shu joy / Почему это место",
-    q30: "Offlayn noqulaylik / Неудобство оффлайн",
-    q31: "Telefon turi / Тип телефона",
-    q32: "Ijtimoiy tarmoqlar / Соцсети",
-    q33: "Mobil xarid tajribasi / Опыт мобильных покупок",
-    q34: "Yangi ilova tayyorligi / Готовность к новому приложению",
-    q35: "Nima yetishmaydi / Чего не хватает",
-    q36: "Qo'shimcha takliflar / Дополнительные предложения",
-    q37: "Aloqa usuli / Способ связи"
+  // Question labels
+  var labels = {
+    q1: "Ism va yosh", q2: "Jins", q3: "Yashash joyi", q4: "Kasb", q5: "Oylik daromad",
+    q6: "Xarid chastotasi", q7: "O'rtacha xarid summasi", q8: "Kim uchun xarid", q9: "Muhim kategoriyalar",
+    q10: "Narx segmenti", q11: "Brend muhimligi", q12: "Onlayn xarid", q13: "Platformalar",
+    q14: "Onlayn muammolar", q15: "Kutilmagan tajriba", q16: "Ishonch shakli", q17: "Qaytarish muhimligi",
+    q18: "To'lov usuli", q19: "Yetkazish kutish", q20: "Yetkazish narxi", q21: "Bepul yetkazish minimali",
+    q22: "Marketplace bilimi", q23: "Bitta ilova qulayligi", q24: "Muhim funksiyalar",
+    q25: "Original uchun to'lash", q26: "Aksiya muhimligi", q27: "AI stilist qiziqishi",
+    q28: "Hozirgi xarid joyi", q29: "Nima uchun shu joy", q30: "Offlayn noqulaylik",
+    q31: "Telefon turi", q32: "Ijtimoiy tarmoqlar", q33: "Mobil xarid tajribasi",
+    q34: "Yangi ilova tayyorligi", q35: "Nima yetishmaydi", q36: "Qo'shimcha takliflar", q37: "Aloqa usuli"
   };
 
+  var sections = [
+    { title: "\ud83d\udccc UMUMIY MA'LUMOTLAR", qs: [1,2,3,4,5] },
+    { title: "\ud83d\udecd XARID ODATLARI", qs: [6,7,8,9,10,11] },
+    { title: "\ud83d\udcf1 ONLAYN XARID TAJRIBASI", qs: [12,13,14,15,16,17] },
+    { title: "\ud83d\udcb3 TO'LOV VA YETKAZIB BERISH", qs: [18,19,20,21] },
+    { title: "\u2b50 LOOM MARKETPLACE HAQIDA", qs: [22,23,24,25,26,27] },
+    { title: "\ud83c\udfea OFFLAYN XARID", qs: [28,29,30] },
+    { title: "\ud83d\udcf2 TEXNOLOGIYA", qs: [31,32,33,34] },
+    { title: "\ud83d\udcdd QO'SHIMCHA", qs: [35,36,37] }
+  ];
+
   function collectFormData() {
-    const data = {};
-    // Text/textarea fields
-    for (let i = 1; i <= 37; i++) {
-      const name = 'q' + i;
-      const textEl = form.querySelector(`input[name="${name}"][type="text"], textarea[name="${name}"]`);
-      if (textEl) {
-        data[name] = textEl.value.trim();
-        continue;
-      }
-      // Radio
-      const radio = form.querySelector(`input[name="${name}"]:checked`);
-      if (radio) {
-        data[name] = radio.value;
-        continue;
-      }
-      // Checkbox
-      const checks = form.querySelectorAll(`input[name="${name}"]:checked`);
+    var data = {};
+    for (var i = 1; i <= 37; i++) {
+      var name = 'q' + i;
+      var textEl = form.querySelector('input[name="' + name + '"][type="text"], textarea[name="' + name + '"]');
+      if (textEl) { data[name] = textEl.value.trim(); continue; }
+      var radio = form.querySelector('input[name="' + name + '"]:checked');
+      if (radio) { data[name] = radio.value; continue; }
+      var checks = form.querySelectorAll('input[name="' + name + '"]:checked');
       if (checks.length > 0) {
-        data[name] = Array.from(checks).map(c => c.value).join(', ');
+        data[name] = Array.from(checks).map(function(c) { return c.value; }).join(', ');
         continue;
       }
       data[name] = '';
     }
-    // Also grab "other" fields
-    ['q13_other','q16_other','q22_detail','q32_other'].forEach(name => {
-      const el = form.querySelector(`[name="${name}"]`);
+    // "Other" fields
+    ['q13_other','q16_other','q22_detail','q32_other'].forEach(function(n) {
+      var el = form.querySelector('[name="' + n + '"]');
       if (el && el.value.trim()) {
-        const base = name.replace('_other','').replace('_detail','');
+        var base = n.replace('_other','').replace('_detail','');
         if (data[base]) data[base] += ', ' + el.value.trim();
         else data[base] = el.value.trim();
       }
     });
-    // Notes
-    const notes = form.querySelector('textarea[name="notes"]');
+    var notes = form.querySelector('textarea[name="notes"]');
     if (notes && notes.value.trim()) data['notes'] = notes.value.trim();
     return data;
   }
 
-  async function generatePDF(data) {
-    if (!window.jspdf) {
-      throw new Error('PDF kutubxonasi yuklanmadi. Sahifani qayta yuklang / Перезагрузите страницу');
-    }
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageW = 210;
-    const margin = 20;
-    const contentW = pageW - margin * 2;
-    let y = 20;
+  function buildMessage(data) {
+    var now = new Date();
+    var date = now.toLocaleDateString('uz-UZ') + ' ' + now.toLocaleTimeString('uz-UZ', {hour:'2-digit', minute:'2-digit'});
+    var msg = '\ud83d\udccb LOOM CUSTDEV \u2014 YANGI JAVOB\n';
+    msg += '\ud83d\udcc5 ' + date + '\n';
+    msg += '\ud83d\udc64 ' + (data.q1 || "Noma'lum") + '\n';
+    msg += '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n';
 
-    // Header
-    doc.setFontSize(22);
-    doc.setFont('helvetica', 'bold');
-    doc.text('LOOM', pageW / 2, y, { align: 'center' });
-    y += 7;
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120);
-    doc.text('Fashion Marketplace — Customer Development', pageW / 2, y, { align: 'center' });
-    y += 5;
-    doc.setFontSize(8);
-    doc.text(new Date().toLocaleString('uz-UZ', { dateStyle: 'long', timeStyle: 'short' }), pageW / 2, y, { align: 'center' });
-    y += 3;
-
-    // Line
-    doc.setDrawColor(200, 168, 76);
-    doc.setLineWidth(0.5);
-    doc.line(margin, y, pageW - margin, y);
-    y += 10;
-
-    doc.setTextColor(40);
-
-    const sections = [
-      { title: "1. Umumiy ma'lumotlar", qs: [1,2,3,4,5] },
-      { title: "2. Xarid odatlari", qs: [6,7,8,9,10,11] },
-      { title: "3. Onlayn xarid tajribasi", qs: [12,13,14,15,16,17] },
-      { title: "4. To'lov va yetkazib berish", qs: [18,19,20,21] },
-      { title: "5. Loom Marketplace haqida", qs: [22,23,24,25,26,27] },
-      { title: "6. Offlayn xarid", qs: [28,29,30] },
-      { title: "7. Texnologiya va qurilmalar", qs: [31,32,33,34] },
-      { title: "8. Qo'shimcha", qs: [35,36,37] }
-    ];
-
-    for (const section of sections) {
-      // Check page space
-      if (y > 265) { doc.addPage(); y = 20; }
-
-      // Section title
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(160, 130, 50);
-      doc.text(section.title, margin, y);
-      y += 2;
-      doc.setDrawColor(220, 200, 150);
-      doc.setLineWidth(0.2);
-      doc.line(margin, y, pageW - margin, y);
-      y += 6;
-
-      for (const qNum of section.qs) {
-        const key = 'q' + qNum;
-        const label = questionLabels[key] || key;
-        const answer = data[key] || '—';
-
-        if (y > 272) { doc.addPage(); y = 20; }
-
-        // Question
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(60);
-        doc.text(qNum + '. ' + label, margin, y);
-        y += 5;
-
-        // Answer (with word wrap)
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(30);
-        doc.setFontSize(10);
-        const lines = doc.splitTextToSize(answer, contentW - 5);
-        for (const line of lines) {
-          if (y > 280) { doc.addPage(); y = 20; }
-          doc.text(line, margin + 3, y);
-          y += 5;
-        }
-        y += 3;
-      }
-      y += 4;
-    }
-
-    // Notes if present
-    if (data.notes) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(160, 130, 50);
-      doc.text("Qo'shimcha izohlar", margin, y);
-      y += 7;
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(30);
-      doc.setFontSize(10);
-      const noteLines = doc.splitTextToSize(data.notes, contentW - 5);
-      for (const line of noteLines) {
-        if (y > 280) { doc.addPage(); y = 20; }
-        doc.text(line, margin + 3, y);
-        y += 5;
-      }
-    }
-
-    // Footer on last page
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(7);
-      doc.setTextColor(150);
-      doc.text('Loom Fashion Marketplace — Maxfiy / Конфиденциально', pageW / 2, 290, { align: 'center' });
-      doc.text(i + ' / ' + pageCount, pageW - margin, 290, { align: 'right' });
-    }
-
-    return doc.output('blob');
-  }
-
-  async function sendToTelegram(pdfBlob, respondentName) {
-    const BOT_TOKEN = '8799233590:AAE8c4UhkthkRVPN8zvtZycSELPY3YrBJ74';
-    const CHAT_ID = '-1002492360300';
-
-    const date = new Date().toLocaleDateString('uz-UZ');
-    const fileName = 'Loom_CustDev_' + (respondentName || 'response').replace(/[^a-zA-Z0-9]/g, '_') + '_' + date + '.pdf';
-
-    const fd = new FormData();
-    fd.append('chat_id', CHAT_ID);
-    fd.append('document', new Blob([pdfBlob], { type: 'application/pdf' }), fileName);
-    fd.append('caption', '\u{1F4CB} Yangi CustDev javob!\n\u{1F464} ' + (respondentName || "Noma'lum") + '\n\u{1F4C5} ' + date);
-
-    const response = await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendDocument', {
-      method: 'POST',
-      body: fd
+    sections.forEach(function(section) {
+      msg += section.title + '\n\n';
+      section.qs.forEach(function(qNum) {
+        var key = 'q' + qNum;
+        var label = labels[key] || key;
+        var answer = data[key] || '\u2014';
+        msg += qNum + '. ' + label + '\n\u27a4 ' + answer + '\n\n';
+      });
     });
 
-    const result = await response.json();
-    console.log('Telegram API response:', result);
-
-    if (!result.ok) {
-      throw new Error(result.description || 'Telegram API error');
+    if (data.notes) {
+      msg += "\ud83d\uddd2 QO'SHIMCHA IZOHLAR\n\u27a4 " + data.notes + '\n';
     }
+
+    msg += '\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
+    msg += 'Loom Fashion Marketplace \ud83e\udea1';
+    return msg;
+  }
+
+  async function sendToTelegram(data) {
+    var BOT_TOKEN = '8799233590:AAE8c4UhkthkRVPN8zvtZycSELPY3YrBJ74';
+    var CHAT_ID = '-1002492360300';
+    var message = buildMessage(data);
+
+    var response = await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: message,
+        parse_mode: ''
+      })
+    });
+
+    var result = await response.json();
+    console.log('Telegram:', result);
+    if (!result.ok) throw new Error(result.description || 'Telegram xatolik');
     return true;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const btn = submitBtn;
-    btn.classList.add('loading');
-    btn.disabled = true;
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
 
     try {
-      const data = collectFormData();
-      const pdfBlob = await generatePDF(data);
-      const success = await sendToTelegram(pdfBlob, data.q1);
+      var data = collectFormData();
+      await sendToTelegram(data);
 
-      const toast = document.getElementById('toast');
-      if (success) {
-        toast.textContent = 'Javoblar yuborildi! / Ответы отправлены!';
-        toast.style.borderColor = 'var(--success)';
-        toast.style.color = 'var(--success)';
-      } else {
-        toast.textContent = 'Xatolik yuz berdi / Произошла ошибка';
-        toast.style.borderColor = 'var(--error)';
-        toast.style.color = 'var(--error)';
-      }
+      var toast = document.getElementById('toast');
+      toast.textContent = '\u2705 Javoblar yuborildi! / \u041e\u0442\u0432\u0435\u0442\u044b \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u044b!';
+      toast.style.borderColor = 'var(--success)';
+      toast.style.color = 'var(--success)';
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 4000);
+      setTimeout(function() { toast.classList.remove('show'); }, 4000);
 
-      if (success) {
-        form.reset();
-        updateProgress();
-      }
+      form.reset();
+      updateProgress();
     } catch (err) {
-      console.error('Submit error:', err);
-      const toast = document.getElementById('toast');
-      toast.textContent = err.message || 'Tarmoq xatoligi / Ошибка сети';
+      console.error('Error:', err);
+      var toast = document.getElementById('toast');
+      toast.textContent = '\u274c ' + (err.message || 'Tarmoq xatoligi');
       toast.style.borderColor = 'var(--error)';
       toast.style.color = 'var(--error)';
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 5000);
+      setTimeout(function() { toast.classList.remove('show'); }, 5000);
     }
 
-    btn.classList.remove('loading');
+    submitBtn.classList.remove('loading');
     updateProgress();
   }
 
-  // Init
   updateProgress();
 </script>
 
